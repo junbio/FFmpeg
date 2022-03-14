@@ -135,6 +135,11 @@ int avpriv_tempfile(const char *prefix, char **filename, int log_offset, void *l
 #       define O_EXCL 0
 #   endif
     fd = open(*filename, O_RDWR | O_BINARY | O_CREAT | O_EXCL, 0600);
+#elif __APPLE__ 
+    char tmpdir[256];
+    confstr(_CS_DARWIN_USER_TEMP_DIR, tmpdir, sizeof(tmpdir));
+    snprintf(*filename, len, "%s/%sXXXXXX", tmpdir, prefix);
+    fd = mkstemp(*filename);
 #else
     snprintf(*filename, len, "/tmp/%sXXXXXX", prefix);
     fd = mkstemp(*filename);
